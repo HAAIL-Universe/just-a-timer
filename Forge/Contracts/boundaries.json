@@ -1,0 +1,62 @@
+{
+  "description": "Layer boundary rules for Just a timer",
+  "layers": [
+    {
+      "name": "routers",
+      "glob": "app/routers/**/*.py",
+      "forbidden": [
+        {
+          "pattern": "from app.repos",
+          "reason": "Routers must not import repos directly \u2014 use services"
+        },
+        {
+          "pattern": "asyncpg|psycopg|sqlalchemy",
+          "reason": "No DB drivers in routers"
+        }
+      ]
+    },
+    {
+      "name": "services",
+      "glob": "app/services/**/*.py",
+      "forbidden": [
+        {
+          "pattern": "from fastapi import Request|Response",
+          "reason": "Services must not be HTTP-aware"
+        },
+        {
+          "pattern": "from app.routers",
+          "reason": "Services must not import routers"
+        }
+      ]
+    },
+    {
+      "name": "repos",
+      "glob": "app/repos/**/*.py",
+      "forbidden": [
+        {
+          "pattern": "from app.services",
+          "reason": "Repos must not import services \u2014 data access only"
+        },
+        {
+          "pattern": "from fastapi",
+          "reason": "Repos are HTTP-unaware"
+        }
+      ]
+    },
+    {
+      "name": "clients",
+      "glob": "app/clients/**/*.py",
+      "forbidden": [
+        {
+          "pattern": "from app.repos",
+          "reason": "Clients must not access DB directly"
+        },
+        {
+          "pattern": "from app.services",
+          "reason": "Clients are thin external API wrappers only"
+        }
+      ]
+    }
+  ],
+  "known_violations": []
+}
